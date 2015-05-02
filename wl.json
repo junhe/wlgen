@@ -14,8 +14,8 @@
             "offsetdist":   {"mu": 0, "sigma": 0.25},
             "sizedist":     {"mu": 0, "sigma": 0.34},
             "type": "read", 
-            "offsetorder": "x / 10",
-            "sizeorder": "x / 10"
+            "offsetorderhash": "x['offset']",
+            "sizeorderhash": "-x / 10"
         }
     }
 }
