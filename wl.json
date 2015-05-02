@@ -1,0 +1,23 @@
+{
+    "singles": {
+        "single1": {
+            "mode": 1,
+            "list": [
+                {"off":0, "size":10},
+                {"off":10, "size":10},
+                {"off":20, "size":10} ],
+            "type": "read"
+        },
+        "single2": {
+            "mode":         2,
+            "n_access":     100,
+            "offsetdist":   {"mu": 0, "sigma": 0.25},
+            "sizedist":     {"mu": 0, "sigma": 0.34},
+            "type": "read", 
+            "offsetorder": "x / 10",
+            "sizeorder": "x / 10"
+        }
+    }
+}
+
+

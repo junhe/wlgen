@@ -33,16 +33,18 @@ def apply_single_model_02(conf, prod, fpath):
     off_mu = conf["offsetdist"]["mu"]
     off_sigma = conf["offsetdist"]["sigma"]
     offsets = [random.lognormvariate(off_mu, off_sigma) for i in range(n_access)]
+    print 'offsets', offsets
 
     size_mu = conf["sizedist"]["mu"]
     size_sigma = conf["sizedist"]["sigma"]
     sizes = [random.lognormvariate(size_mu, size_sigma) for i in range(n_access)]
+    print 'sizes', sizes
 
 def main():
     prod = producer.Producer(rootdir="/tmp/",
             tofile="/tmp/producedfile.txt")
 
-    global_conf = load_json('./tutorial/wl.json')
+    global_conf = load_json('wl.json')
     apply_single_model_01(global_conf["single"], prod)
 
 if __name__ == '__main__':
