@@ -25,7 +25,24 @@
             "offsetorderhash": "x['offset']",
             "sizeorderhash": "-x / 10"
         }
+    },
 
+    "namespaces": {
+        "namespace1": {
+            "rootdir": "/tmp/",
+            "shape": {"depth": 4, "fanout": 4},
+            "pattern": "breadthfirst"
+        },
+        "namespace2": {
+            "rootdir": "/tmp/",
+            "shape": {"depth": 3, "fanout": 4},
+            "pattern": "depthfirst"
+        },
+        "namespace4": {
+            "rootdir": "/tmp/",
+            "shape": {"depth": 3, "fanout": 4},
+            "pattern": "random"
+        }
     }
 }
 

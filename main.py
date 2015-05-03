@@ -2,10 +2,11 @@ import json
 import producer
 import random
 import numpy as np
+import Queue
+import os
 
 def load_json(fpath):
     decoded = json.load(open(fpath, 'r'))
-    #print decoded
     return decoded
 
 def apply_single_model_01(conf, prod, fpath):
@@ -26,7 +27,6 @@ def get_lognorm_list(mu, sigma, n, factor):
     l = [int(random.lognormvariate(mu, sigma)*factor)
             for i in range(n)]
     return l
-
 
 def apply_single_model_02(conf, prod, fpath):
     if conf["mode"] != 2:
@@ -96,6 +96,81 @@ def apply_single_model_03(conf, prod, fpath):
 
     prod.display()
 
+def create_namespace_breadthfirst(conf, prod):
+    depth = conf['shape']['depth']
+    fanout = conf['shape']['fanout']
+    rootdir = conf['rootdir']
+
+    q = Queue.Queue()
+
+    q.put(rootdir) # put the root in
+
+    while not q.empty():
+        item = q.get()
+
+        # create the actual directory here
+        #print 'creating', item
+        prod.addDirOp2('mkdir', 0, item)
+
+        # put children of item to the queue
+        if len(item.strip('/').split('/')) < depth:
+            for i in range(fanout):
+                newitem = os.path.join(item, str(i))
+                #print 'adding', newitem, 'to q'
+                q.put(newitem)
+
+    prod.display()
+
+def create_namespace_depthfirst(conf, prod):
+    depth = conf['shape']['depth']
+    fanout = conf['shape']['fanout']
+    rootdir = conf['rootdir']
+
+    s = []
+
+    s.append(rootdir) # append() = push()
+
+    while len(s) > 0:
+        dentry = s.pop()
+
+        # create dentry
+        prod.addDirOp2('mkdir', 0, dentry)
+
+        # put children of item to the queue
+        if len(dentry.strip('/').split('/')) < depth:
+            for i in reversed(range(fanout)):
+                newitem = os.path.join(dentry, str(i))
+                #print 'adding', newitem, 'to q'
+                s.append(newitem)
+
+    prod.display()
+
+def create_namespace_random(conf, prod):
+    depth = conf['shape']['depth']
+    fanout = conf['shape']['fanout']
+    rootdir = conf['rootdir']
+
+    s = []
+    s.append(rootdir) # append() = push()
+
+    while len(s) > 0:
+        # randomly get one, all the items in the list s can
+        # be immediately created
+        dentry = random.sample(s, 1)[0]
+        s.remove(dentry)
+
+        # create dentry
+        prod.addDirOp2('mkdir', 0, dentry)
+
+        # put children of item to the queue
+        if len(dentry.strip('/').split('/')) < depth:
+            for i in reversed(range(fanout)):
+                newitem = os.path.join(dentry, str(i))
+                #print 'adding', newitem, 'to q'
+                s.append(newitem)
+
+    prod.display()
+
 def main():
     prod = producer.Producer(rootdir="/tmp/",
             tofile="/tmp/producedfile.txt")
@@ -103,10 +178,11 @@ def main():
     global_conf = load_json('wl.json')
     # apply_single_model_01(global_conf["singles"]["single1"], prod)
     #apply_single_model_02(global_conf["singles"]["single2"], prod, 'mypath')
-    apply_single_model_03(global_conf["singles"]["single3"], prod, 'mypath')
+    #apply_single_model_03(global_conf["singles"]["single3"], prod, 'mypath')
+    #create_namespace_depthfirst(global_conf['namespaces']['namespace1'], prod)
+    create_namespace_random(global_conf['namespaces']['namespace1'], prod)
+
 
 if __name__ == '__main__':
     main()
-
-
 
