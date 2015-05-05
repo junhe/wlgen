@@ -1,4 +1,5 @@
 import json
+import argparse
 import producer
 import random
 import numpy as np
@@ -130,7 +131,7 @@ def create_namespace_breadthfirst(conf, prod, singles_conf):
                 print 'adding', newitem, 'to q'
                 q.put(newitem)
 
-    prod.display()
+    # prod.display()
 
 def create_namespace_depthfirst(conf, prod, singles_conf):
     depth = conf['shape']['depth']
@@ -159,7 +160,7 @@ def create_namespace_depthfirst(conf, prod, singles_conf):
                 #print 'adding', newitem, 'to q'
                 s.append(newitem)
 
-    prod.display()
+    # prod.display()
 
 def create_namespace_random(conf, prod, singles_conf):
     depth = conf['shape']['depth']
@@ -190,7 +191,7 @@ def create_namespace_random(conf, prod, singles_conf):
                 #print 'adding', newitem, 'to q'
                 s.append(newitem)
 
-    prod.display()
+    # prod.display()
 
 def create_files_in_dir(dirpath, nfile, singlepat, singles_conf, prod):
     for i in range(nfile):
@@ -223,8 +224,28 @@ def create_namespace(namespace_id, prod, global_conf):
         create_namespace_random(namespace_conf, prod, singles_conf)
 
 def main():
-    global_conf = load_json('wl.json')
-    build_workload(global_conf)
+    parser = argparse.ArgumentParser(
+            description="this is a WLGEN parser. It takes a WLGEN code and produce "\
+                        "workload description file"
+            )
+    parser.add_argument('-i', '--input', action='store')
+    parser.add_argument('-o', '--output', action='store')
+    args = parser.parse_args()
+
+    if args.input == None or args.output == None:
+        print parser.print_help()
+        exit(1)
+
+    global_conf = load_json(args.input)
+    seq = global_conf['creationsequence']
+
+    prod = producer.Producer(rootdir="/tmp/",
+            tofile=args.output)
+
+    for spaceid in seq:
+        create_namespace(spaceid, prod, global_conf)
+
+    prod.saveWorkloadToFile()
 
 if __name__ == '__main__':
     main()
