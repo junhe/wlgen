@@ -125,10 +125,11 @@ def create_namespace_breadthfirst(conf, prod, singles_conf):
         # print 'after creating files'
 
         # put children of item to the queue
-        if len(item.strip('/').split('/')) < depth:
+        if len(item.strip('/').split('/')) \
+            - len(rootdir.strip('/').split('/')) < depth:
             for i in range(fanout):
                 newitem = os.path.join(item, str(i))
-                print 'adding', newitem, 'to q'
+                # print 'adding', newitem, 'to q'
                 q.put(newitem)
 
     # prod.display()
@@ -154,7 +155,8 @@ def create_namespace_depthfirst(conf, prod, singles_conf):
         create_files_in_dir(dentry, nfile, singlepat, singles_conf, prod)
 
         # put children of item to the queue
-        if len(dentry.strip('/').split('/')) < depth:
+        if len(dentry.strip('/').split('/')) \
+            - len(rootdir.strip('/').split('/')) < depth:
             for i in reversed(range(fanout)):
                 newitem = os.path.join(dentry, str(i))
                 #print 'adding', newitem, 'to q'
@@ -185,7 +187,8 @@ def create_namespace_random(conf, prod, singles_conf):
         create_files_in_dir(dentry, nfile, singlepat, singles_conf, prod)
 
         # put children of item to the queue
-        if len(dentry.strip('/').split('/')) < depth:
+        if len(dentry.strip('/').split('/')) \
+            - len(rootdir.strip('/').split('/')) < depth:
             for i in reversed(range(fanout)):
                 newitem = os.path.join(dentry, str(i))
                 #print 'adding', newitem, 'to q'
