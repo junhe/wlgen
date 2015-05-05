@@ -1,3 +1,3 @@
 
 all:
-	gcc -o player Util.cpp WorkloadFetcher.cpp WorkloadPlayer.cpp player.cpp
+	mpic++ -o player Util.cpp WorkloadFetcher.cpp WorkloadPlayer.cpp player.cpp

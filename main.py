@@ -22,7 +22,7 @@ def apply_single_model_01(conf, prod, fpath):
                 off=item["off"], len=item["size"])
     prod.addUniOp2('close', 0, fpath)
 
-    prod.display()
+    # prod.display()
 
 def get_lognorm_list(mu, sigma, n, factor):
     l = [int(random.lognormvariate(mu, sigma)*factor)
@@ -64,7 +64,7 @@ def apply_single_model_02(conf, prod, fpath):
                 off=pair["offset"], len=pair["size"])
     prod.addUniOp2('close', 0, fpath)
 
-    prod.display()
+    # prod.display()
 
 def apply_single_model_03(conf, prod, fpath):
     if conf["mode"] != 3:
@@ -99,7 +99,7 @@ def apply_single_model_03(conf, prod, fpath):
                 off=pair["offset"], len=pair["size"])
     prod.addUniOp2('close', 0, fpath)
 
-    prod.display()
+    # prod.display()
 
 def create_namespace_breadthfirst(conf, prod, singles_conf):
     depth = conf['shape']['depth']
@@ -121,12 +121,13 @@ def create_namespace_breadthfirst(conf, prod, singles_conf):
         singlepat = conf['singlepattern']
         nfile = conf['filesperdir']
         create_files_in_dir(item, nfile, singlepat, singles_conf, prod)
+        # print 'after creating files'
 
         # put children of item to the queue
         if len(item.strip('/').split('/')) < depth:
             for i in range(fanout):
                 newitem = os.path.join(item, str(i))
-                #print 'adding', newitem, 'to q'
+                print 'adding', newitem, 'to q'
                 q.put(newitem)
 
     prod.display()
