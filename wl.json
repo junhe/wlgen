@@ -37,22 +37,24 @@
         },
         "namespace2": {
             "rootdir": "/tmp/p2",
-            "shape": {"depth": 3, "fanout": 4},
+            "shape": {"depth": 3, "fanout": 2},
             "pattern": "depthfirst",
             "filesperdir": 2,
             "singlepattern": "single2"
         },
         "namespace3": {
             "rootdir": "/tmp/p3",
-            "shape": {"depth": 3, "fanout": 4},
+            "shape": {"depth": 2, "fanout": 4},
             "pattern": "random",
             "filesperdir": 2,
-            "singlepattern": "single2"
+            "singlepattern": "single3"
         }
     },
 
     "creationsequence": [
-        "namespace1"
+        "namespace1",
+        "namespace2",
+        "namespace3"
     ]
 }
 

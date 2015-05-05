@@ -94,7 +94,7 @@ def table_to_file(table, filepath, adddic=None):
 def run001():
     shcmd("rm -fr /tmp/p*", ignore_error=True)
     shcmd("python main.py -i wl.json -o myworkload.txt")
-    shcmd("mpirun -np 1 player myworkload.txt")
+    shcmd("mpirun -mca btl ^openib -np 1 player myworkload.txt")
 
 def main():
     #function you want to call
