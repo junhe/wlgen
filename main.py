@@ -16,10 +16,11 @@ def apply_single_model_01(conf, prod, fpath):
 
     optype = conf["type"]
 
+    prod.addUniOp2('open', 0, fpath)
     for item in conf["list"]:
-        print item
         prod.addReadOrWrite2(op=optype, pid=0, path=fpath,
                 off=item["off"], len=item["size"])
+    prod.addUniOp2('close', 0, fpath)
 
     prod.display()
 
@@ -56,10 +57,12 @@ def apply_single_model_02(conf, prod, fpath):
     # sort pairs by offsetorder hash
     pairs.sort(key = lambda x: eval(conf["offsetorderhash"]))
 
+    prod.addUniOp2('open', 0, fpath)
     for pair in pairs:
-        print pair
+        # print pair
         prod.addReadOrWrite2(op=optype, pid=0, path=fpath,
                 off=pair["offset"], len=pair["size"])
+    prod.addUniOp2('close', 0, fpath)
 
     prod.display()
 
@@ -89,14 +92,16 @@ def apply_single_model_03(conf, prod, fpath):
     # sort pairs by offsetorder hash
     pairs.sort(key = lambda x: eval(conf["offsetorderhash"]))
 
+    prod.addUniOp2('open', 0, fpath)
     for pair in pairs:
-        print pair
+        # print pair
         prod.addReadOrWrite2(op=optype, pid=0, path=fpath,
                 off=pair["offset"], len=pair["size"])
+    prod.addUniOp2('close', 0, fpath)
 
     prod.display()
 
-def create_namespace_breadthfirst(conf, prod):
+def create_namespace_breadthfirst(conf, prod, singles_conf):
     depth = conf['shape']['depth']
     fanout = conf['shape']['fanout']
     rootdir = conf['rootdir']
@@ -112,6 +117,11 @@ def create_namespace_breadthfirst(conf, prod):
         #print 'creating', item
         prod.addDirOp2('mkdir', 0, item)
 
+        # create files
+        singlepat = conf['singlepattern']
+        nfile = conf['filesperdir']
+        create_files_in_dir(item, nfile, singlepat, singles_conf, prod)
+
         # put children of item to the queue
         if len(item.strip('/').split('/')) < depth:
             for i in range(fanout):
@@ -121,7 +131,7 @@ def create_namespace_breadthfirst(conf, prod):
 
     prod.display()
 
-def create_namespace_depthfirst(conf, prod):
+def create_namespace_depthfirst(conf, prod, singles_conf):
     depth = conf['shape']['depth']
     fanout = conf['shape']['fanout']
     rootdir = conf['rootdir']
@@ -136,6 +146,11 @@ def create_namespace_depthfirst(conf, prod):
         # create dentry
         prod.addDirOp2('mkdir', 0, dentry)
 
+        # create files
+        singlepat = conf['singlepattern']
+        nfile = conf['filesperdir']
+        create_files_in_dir(dentry, nfile, singlepat, singles_conf, prod)
+
         # put children of item to the queue
         if len(dentry.strip('/').split('/')) < depth:
             for i in reversed(range(fanout)):
@@ -145,7 +160,7 @@ def create_namespace_depthfirst(conf, prod):
 
     prod.display()
 
-def create_namespace_random(conf, prod):
+def create_namespace_random(conf, prod, singles_conf):
     depth = conf['shape']['depth']
     fanout = conf['shape']['fanout']
     rootdir = conf['rootdir']
@@ -162,6 +177,11 @@ def create_namespace_random(conf, prod):
         # create dentry
         prod.addDirOp2('mkdir', 0, dentry)
 
+        # create files
+        singlepat = conf['singlepattern']
+        nfile = conf['filesperdir']
+        create_files_in_dir(dentry, nfile, singlepat, singles_conf, prod)
+
         # put children of item to the queue
         if len(dentry.strip('/').split('/')) < depth:
             for i in reversed(range(fanout)):
@@ -171,17 +191,39 @@ def create_namespace_random(conf, prod):
 
     prod.display()
 
-def main():
+def create_files_in_dir(dirpath, nfile, singlepat, singles_conf, prod):
+    for i in range(nfile):
+        fpath = os.path.join(dirpath, 'file.'+singlepat+'.'+str(i))
+        singleconf = singles_conf[singlepat]
+        if singleconf['mode'] == 1:
+            apply_single_model_01(singleconf, prod, fpath)
+        elif singleconf['mode'] == 2:
+            apply_single_model_02(singleconf, prod, fpath)
+        elif singleconf['mode'] == 3:
+            apply_single_model_03(singleconf, prod, fpath)
+
+def build_workload(global_conf):
+    seq = global_conf['creationsequence']
     prod = producer.Producer(rootdir="/tmp/",
             tofile="/tmp/producedfile.txt")
 
-    global_conf = load_json('wl.json')
-    # apply_single_model_01(global_conf["singles"]["single1"], prod)
-    #apply_single_model_02(global_conf["singles"]["single2"], prod, 'mypath')
-    #apply_single_model_03(global_conf["singles"]["single3"], prod, 'mypath')
-    #create_namespace_depthfirst(global_conf['namespaces']['namespace1'], prod)
-    create_namespace_random(global_conf['namespaces']['namespace1'], prod)
+    for spaceid in seq:
+        create_namespace(spaceid, prod, global_conf)
 
+def create_namespace(namespace_id, prod, global_conf):
+    namespace_conf= global_conf['namespaces'][namespace_id]
+    singles_conf = global_conf['singles']
+
+    if namespace_conf['pattern'] == 'breadthfirst':
+        create_namespace_breadthfirst(namespace_conf, prod, singles_conf)
+    elif namespace_conf['pattern'] == 'depthfirst':
+        create_namespace_depthfirst(namespace_conf, prod, singles_conf)
+    elif namespace_conf['pattern'] == 'random':
+        create_namespace_random(namespace_conf, prod, singles_conf)
+
+def main():
+    global_conf = load_json('wl.json')
+    build_workload(global_conf)
 
 if __name__ == '__main__':
     main()
