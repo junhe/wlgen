@@ -182,7 +182,7 @@ int main(int argc, char **argv)
     end = MPI_Wtime();
 
     if ( rank == 0 ) {
-        printf("time(second): %lf\n", end - start);
+        printf("\ntime(second): %lf\n", end - start);
     }
 
     MPI_Finalize();

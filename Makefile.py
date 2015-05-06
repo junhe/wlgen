@@ -19,6 +19,14 @@ def shcmd(cmd, ignore_error=False):
         exit(ret)
     return ret
 
+def run_and_get_output(cmd):
+    output = []
+    cmd = shlex.split(cmd)
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    p.wait()
+
+    return p.stdout.readlines()
+
 class cd:
     """Context manager for changing the current working directory"""
     def __init__(self, newPath):
@@ -94,7 +102,9 @@ def table_to_file(table, filepath, adddic=None):
 def run001():
     shcmd("rm -fr /tmp/p*", ignore_error=True)
     shcmd("python main.py -i wl.json -o myworkload.txt")
-    shcmd("mpirun -mca btl ^openib -np 1 player myworkload.txt")
+    # shcmd("mpirun -mca btl ^openib -np 1 player myworkload.txt")
+    lines = run_and_get_output("mpirun -mca btl ^openib -np 1 player myworkload.txt")
+    print lines
 
 def main():
     #function you want to call
