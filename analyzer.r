@@ -13,7 +13,7 @@ sme <- function()
     source(THISFILE)
 }
 
-explore.FSJ386323 <- function()
+explore.HBO <- function()
 {
     transfer <- function()
     {
@@ -25,7 +25,7 @@ explore.FSJ386323 <- function()
         h()=random()        18.921395
         h()=offset          8.161882
         h()=-offset         74.934069
-
+        """
     }
 
     clean <- function(d)
