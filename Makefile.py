@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import itertools
+import json
 import random
 import argparse
 import re
@@ -106,9 +107,34 @@ def run001():
     lines = run_and_get_output("mpirun -mca btl ^openib -np 1 player myworkload.txt")
     print lines
 
+def load_json(fpath):
+    decoded = json.load(open(fpath, 'r'))
+    return decoded
+
+def dump_json(obj, fpath):
+    "obj is usually a dictionary"
+    json.dump(obj, open(fpath, 'w'), indent=4)
+
+
+def hbotest():
+    hashes = ["x['offset']", "random.random()", "-x['offset']"]
+
+    for i,h in enumerate(hashes):
+        conf = load_json('testhbo.json')
+        conf['singles']['single3']['offsetorderhash'] = h
+        print conf
+        dump_json(conf, str(i)+'.json')
+
+        # workloadfile = 'testhbo.workload'
+        # shcmd("rm -fr /scratch/p*", ignore_error=True)
+        # shcmd("python main.py -i testhbo.json -o {f}".format(f=workloadfile))
+        # lines = run_and_get_output("mpirun -mca btl ^openib -np 1 player {f}".format(f=workloadfile))
+        # print lines
+
 def main():
     #function you want to call
-    run001()
+    # run001()
+    hbotest()
 
 def _main():
     parser = argparse.ArgumentParser(

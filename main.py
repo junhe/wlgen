@@ -21,11 +21,13 @@ def apply_single_model_01(conf, prod, fpath):
     for item in conf["list"]:
         prod.addReadOrWrite2(op=optype, pid=0, path=fpath,
                 off=item["off"], len=item["size"])
+        prod.addUniOp2('fsync', 0, fpath)
     prod.addUniOp2('close', 0, fpath)
 
     # prod.display()
 
 def get_lognorm_list(mu, sigma, n, factor):
+    random.seed(0)
     l = [int(random.lognormvariate(mu, sigma)*factor)
             for i in range(n)]
     return l
@@ -63,6 +65,7 @@ def apply_single_model_02(conf, prod, fpath):
         # print pair
         prod.addReadOrWrite2(op=optype, pid=0, path=fpath,
                 off=pair["offset"], len=pair["size"])
+        prod.addUniOp2('fsync', 0, fpath)
     prod.addUniOp2('close', 0, fpath)
 
     # prod.display()
@@ -77,7 +80,7 @@ def apply_single_model_03(conf, prod, fpath):
 
     size_mu = conf["sizedist"]["mu"]
     size_sigma = conf["sizedist"]["sigma"]
-    sizes = get_lognorm_list(size_mu, size_sigma, n_access, 1000)
+    sizes = get_lognorm_list(size_mu, size_sigma, n_access, 4000)
 
     # sort the sizes
     sizes.sort(key = lambda x: eval(conf["sizeorderhash"]))
@@ -98,6 +101,7 @@ def apply_single_model_03(conf, prod, fpath):
         # print pair
         prod.addReadOrWrite2(op=optype, pid=0, path=fpath,
                 off=pair["offset"], len=pair["size"])
+        prod.addUniOp2('fsync', 0, fpath)
     prod.addUniOp2('close', 0, fpath)
 
     # prod.display()
