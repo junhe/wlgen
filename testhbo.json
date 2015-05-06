@@ -1,0 +1,27 @@
+{
+    "singles": {
+        "single3": {
+            "mode":         3,
+            "n_access":     10000,
+            "sizedist":     {"mu": 0, "sigma": 0.34},
+            "type": "write", 
+            "offsetorderhash": "-x['offset']",
+            "sizeorderhash": "-x / 10"
+        }
+    },
+
+    "namespaces": {
+        "namespace1": {
+            "rootdir": "/scratch/p1",
+            "shape": {"depth": 0, "fanout": 1},
+            "pattern": "breadthfirst",
+            "filesperdir": 1,
+            "singlepattern": "single3"
+        }
+    },
+
+    "creationsequence": [
+        "namespace1"
+    ]
+}
+
