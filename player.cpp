@@ -162,6 +162,7 @@ WorkloadDispatcher::run()
 int main(int argc, char **argv)
 {
     int rank, size;
+    double start, end;
 
     MPI_Init (&argc, &argv);/* starts MPI */
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);/* get current process id */
@@ -176,7 +177,13 @@ int main(int argc, char **argv)
 
 
     WorkloadDispatcher wl_disp (rank, size, argv[1]); 
+    start = MPI_Wtime();
     wl_disp.run();
+    end = MPI_Wtime();
+
+    if ( rank == 0 ) {
+        printf("time(second): %lf\n", end - start);
+    }
 
     MPI_Finalize();
     return 0;
