@@ -104,7 +104,7 @@ def run001():
     shcmd("rm -fr /tmp/p*", ignore_error=True)
     shcmd("python main.py -i wl.json -o myworkload.txt")
     # shcmd("mpirun -mca btl ^openib -np 1 player myworkload.txt")
-    lines = run_and_get_output("mpirun -mca btl ^openib -np 1 player myworkload.txt")
+    lines = run_and_get_output("mpirun -np 1 player myworkload.txt")
     print lines
 
 def load_json(fpath):
@@ -133,8 +133,8 @@ def hbotest():
 
 def main():
     #function you want to call
-    # run001()
-    hbotest()
+    run001()
+    # hbotest()
 
 def _main():
     parser = argparse.ArgumentParser(
