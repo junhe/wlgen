@@ -42,6 +42,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <sched.h>
+#include <string.h>
 
 #include "Util.h"
 
@@ -75,6 +76,30 @@ Util::WriteN(const void *vptr, size_t n, int fd)
     return ret;
 }
 
+ssize_t
+Util::PwriteN(const char *buf, size_t n, off_t off, int fd)
+{
+    size_t remain = n;
+    off_t  cur_off = off;
+    int  buf_off;
+    while ( remain > 0 ) {
+        buf_off = cur_off - off;
+        int ret = pwrite(fd, buf + buf_off, remain, cur_off);
+        if ( ret != int(remain) ) {
+            ostringstream oss;
+            oss << "ret=" << ret << ", remain=" << remain << ", cur_off=" << cur_off;
+            if ( ret == -1 ) {
+                oss << " error msg:" << strerror(errno);
+            }
+            cerr << oss.str();
+            if ( ret == -1 ) {
+                exit(1);
+            }
+        }
+        remain -= ret;
+        cur_off += ret;
+    }
+}
 
 int
 Util::Open(const char *fname, int flag)

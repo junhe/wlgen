@@ -39,6 +39,7 @@
 class Util {
     public:
         static ssize_t WriteN(const void *vptr, size_t n, int fd);
+        static ssize_t PwriteN(const char *buf, size_t n, off_t off, int fd);
         static int Open(const char *fname, int flag);
         static int Close(int fd);
         static int Flush(int fd);
