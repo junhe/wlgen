@@ -138,6 +138,7 @@ int main(int argc, char **argv)
     gettimeofday(&end, NULL);
 
     timersub(&end, &start, &result);
+    printf("--- Performance ---\n");
     printf("duration %ld.%ld\n", result.tv_sec, result.tv_usec);
     printf("start    %ld.%ld\n", start.tv_sec, start.tv_usec);
     printf("end      %ld.%ld\n", end.tv_sec, end.tv_usec);
