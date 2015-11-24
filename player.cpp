@@ -61,7 +61,7 @@ WorkloadDispatcher::WorkloadDispatcher(int rank, int np, string wl_path, int buf
     : _rank(rank), _np(np), _bufsize(bufsz)
 {
     if ( _rank == 0 ) {
-        _fetcher = new WorkloadFetcher(1000, wl_path.c_str());
+        _fetcher = new WorkloadFetcher(100000, wl_path.c_str());
     } else {
         _fetcher = NULL;
     }
@@ -94,7 +94,7 @@ WorkloadDispatcher::run()
                 // It is rank0's job
                 _wl_player.play(wl_entry);
                 //cout << "rank:" << _rank << " job:" << wl_entry._entry_str << endl;
-                if (cnt % 1000 == 0)
+                if (cnt % 10000 == 0)
                     cout << "." ;
                 cnt++;
             } else {
@@ -141,7 +141,7 @@ WorkloadDispatcher::run()
 
                 string bufstr = comm_buf;
                 //cout << "rank:" << _rank << " job:" << bufstr << endl;
-                if (cnt % 1000 == 0)
+                if (cnt % 10000 == 0)
                     cout << "." ;
                 cnt++;
                 WorkloadEntry wl_entry(bufstr);
