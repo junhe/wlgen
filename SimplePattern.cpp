@@ -8,16 +8,27 @@
 #include "SimplePattern.h"
 #include "Util.h"
 
-SimplePattern::SimplePattern(int file_size, int write_size, int n_writes,
-    enum PATTERN pattern, const char *file_path)
-    : _file_size(file_size), _write_size(write_size), _n_writes(n_writes),
+SimplePattern::SimplePattern(int file_size, bool fsync, bool sync, 
+        int write_size, int n_writes, enum PATTERN pattern, 
+        const char *file_path)
+    : _file_size(file_size), _fsync(fsync), _sync(sync), _write_size(write_size), _n_writes(n_writes),
     _pattern(pattern), _file_path(file_path)
 {
+    string pat_str;
+    if (_pattern == SEQUENTIAL)
+        pat_str = "sequential";
+    else
+        pat_str = "random";
+
+
+
     cout << "--- Workload summary ---" << endl;
-    cout << "file size:" << _file_size << endl;
-    cout << "write size:" << _write_size << endl;
-    cout << "pattern:" << _pattern << endl;
-    cout << "path:" << _file_path << endl;
+    cout << "filesize    " << _file_size << endl;
+    cout << "fsync       " << _fsync << endl;
+    cout << "sync        " << _sync << endl;
+    cout << "writesize   " << _write_size << endl;
+    cout << "pattern     " << pat_str << endl;
+    cout << "path        " << _file_path << endl;
 
 }
 
@@ -52,10 +63,19 @@ void SimplePattern::run()
         } else if (_pattern == RANDOM) {
             offset = (rand() % n_chunks) * _write_size;
         }
-        cout << "offset " << offset << endl;
+        // cout << "offset " << offset << endl;
         Util::PwriteN(buf, _write_size, offset, fd);
+
+        if (_fsync == true) {
+            // cout << "fsync" << endl;
+            fsync(fd);
+        } 
     }
 
+    if (_sync == true) {
+        // cout << "sync" << endl;
+        sync();
+    } 
     close(fd);
 }
 

@@ -12,12 +12,14 @@ enum PATTERN { SEQUENTIAL, RANDOM };
 
 class SimplePattern {
     public:
-        SimplePattern(int file_size, int write_size, int n_writes, 
+        SimplePattern(int file_size, bool fsync, bool sync, int write_size, int n_writes, 
             enum PATTERN pattern, const char *file_path);
         void run();
 
     private:
         int _file_size;
+        bool _fsync;
+        bool _sync;
         int _write_size;;
         int _n_writes;
         string _file_path;
