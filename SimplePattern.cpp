@@ -10,17 +10,15 @@
 
 SimplePattern::SimplePattern(int file_size, bool fsync, bool sync, 
         int write_size, int n_writes, enum PATTERN pattern, 
-        const char *file_path)
+        const char *file_path, string tag)
     : _file_size(file_size), _fsync(fsync), _sync(sync), _write_size(write_size), _n_writes(n_writes),
-    _pattern(pattern), _file_path(file_path)
+    _pattern(pattern), _file_path(file_path), _tag(tag)
 {
     string pat_str;
     if (_pattern == SEQUENTIAL)
         pat_str = "sequential";
     else
         pat_str = "random";
-
-
 
     cout << "--- Workload summary ---" << endl;
     cout << "filesize    " << _file_size << endl;
@@ -29,6 +27,7 @@ SimplePattern::SimplePattern(int file_size, bool fsync, bool sync,
     cout << "writesize   " << _write_size << endl;
     cout << "pattern     " << pat_str << endl;
     cout << "path        " << _file_path << endl;
+    cout << "tag         " << _tag << endl;
 
 }
 

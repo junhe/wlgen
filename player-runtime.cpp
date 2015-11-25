@@ -21,13 +21,15 @@ class WorkloadConfig {
         int n_writes;
         string file_path;
         enum PATTERN pattern;
+        string tag;
 
         void display() {
-            cout << "file_size " << file_size << endl
+            cout << "file_size  " << file_size << endl
                  << "write_size " << write_size << endl 
-                 << "n_writes " << n_writes << endl 
-                 << "file_path " << file_path << endl 
-                 << "pattern " << pattern << endl;
+                 << "n_writes   " << n_writes << endl 
+                 << "file_path  " << file_path << endl 
+                 << "tag        " << tag << endl 
+                 << "pattern    " << pattern << endl;
         }
 };
 
@@ -35,16 +37,16 @@ class WorkloadConfig {
 void print_usage(char **argv)
 {
     printf("Usage: %s -f file_size(bytes) -w write_size(bytes) -n n_writes -p "
-        "pattern(sequential|random) -y fsync(0|1) -s sync(0|1) -l file_path\n", argv[0]);
+        "pattern(sequential|random) -y fsync(0|1) -s sync(0|1) -l file_path -t tag\n", argv[0]);
 }
 
 void parse_args(int argc, char**argv, WorkloadConfig &wlconf)
 {
-    const char *config = "f:w:n:p:l:y:s:";
+    const char *config = "f:w:n:p:l:y:s:t:";
     char c;
     int index;
 
-    if (argc != 15) {
+    if (argc != 17) {
         cout << "argc " << argc << endl;
         print_usage(argv);
         exit(1);
@@ -54,6 +56,9 @@ void parse_args(int argc, char**argv, WorkloadConfig &wlconf)
     while ((c = getopt (argc, argv, config)) != -1)
         switch (c)
         {
+            case 't':
+                wlconf.tag = optarg; // optarg points to the argument of c
+                break;
             case 'f':
                 wlconf.file_size = atoi(optarg); // optarg points to the argument of c
                 break;
@@ -125,7 +130,7 @@ int main(int argc, char **argv)
             wlconf.fsync,
             wlconf.sync,
             wlconf.write_size, wlconf.n_writes, 
-            wlconf.pattern, wlconf.file_path.c_str());
+            wlconf.pattern, wlconf.file_path.c_str(), wlconf.tag);
 
     // SimplePattern simplepattern(64, 32, 10, SEQUENTIAL, "/tmp/littletest");
     // SimplePattern simplepattern(64, 32, 10, RANDOM, "/tmp/littletest");
