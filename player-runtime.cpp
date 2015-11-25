@@ -7,6 +7,9 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "SimplePattern.h"
 
@@ -22,6 +25,7 @@ class WorkloadConfig {
         string file_path;
         enum PATTERN pattern;
         string tag;
+        string markerfile;
 
         void display() {
             cout << "file_size  " << file_size << endl
@@ -37,16 +41,17 @@ class WorkloadConfig {
 void print_usage(char **argv)
 {
     printf("Usage: %s -f file_size(bytes) -w write_size(bytes) -n n_writes -p "
-        "pattern(sequential|random) -y fsync(0|1) -s sync(0|1) -l file_path -t tag\n", argv[0]);
+        "pattern(sequential|random) -y fsync(0|1) -s sync(0|1) -l file_path "
+        "-t tag -m marker-file\n", argv[0]);
 }
 
 void parse_args(int argc, char**argv, WorkloadConfig &wlconf)
 {
-    const char *config = "f:w:n:p:l:y:s:t:";
+    const char *config = "f:w:n:p:l:y:s:t:m:";
     char c;
     int index;
 
-    if (argc != 17) {
+    if (argc != 19) {
         cout << "argc " << argc << endl;
         print_usage(argv);
         exit(1);
@@ -56,6 +61,9 @@ void parse_args(int argc, char**argv, WorkloadConfig &wlconf)
     while ((c = getopt (argc, argv, config)) != -1)
         switch (c)
         {
+            case 'm':
+                wlconf.markerfile = optarg; // optarg points to the argument of c
+                break;
             case 't':
                 wlconf.tag = optarg; // optarg points to the argument of c
                 break;
@@ -116,6 +124,23 @@ void parse_args(int argc, char**argv, WorkloadConfig &wlconf)
         printf ("Non-option argument %s\n", argv[index]);
 }
 
+void append_to_marker_file(const char *filepath, const char *mark)
+{
+    int fd;
+    int len;
+    string markstr(mark);
+
+    fd = open(filepath, O_APPEND | O_WRONLY);
+    if (fd == -1) {
+        perror("cannot open file.");
+        exit(1);
+    }
+
+    markstr = markstr + '\n';
+    write(fd, markstr.c_str(), markstr.length());
+
+    close(fd);
+}
 
 int main(int argc, char **argv)
 {
@@ -143,6 +168,9 @@ int main(int argc, char **argv)
     gettimeofday(&end, NULL);
 
     timersub(&end, &start, &result);
+
+    append_to_marker_file(wlconf.markerfile.c_str(), wlconf.file_path.c_str());
+
     printf("--- Performance ---\n");
     printf("duration %ld.%ld\n", result.tv_sec, result.tv_usec);
     printf("start    %ld.%ld\n", start.tv_sec, start.tv_usec);
