@@ -136,7 +136,7 @@ void append_to_marker_file(const char *filepath, const char *mark)
         exit(1);
     }
 
-    markstr = markstr + '\n';
+    markstr = "MARK:" + markstr + '\n';
     write(fd, markstr.c_str(), markstr.length());
 
     close(fd);
