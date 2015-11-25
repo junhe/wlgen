@@ -1,6 +1,11 @@
 import subprocess
 import pprint
 
+KB = 2**10
+MB = 2**20
+GB = 2**30
+
+
 translator = {  'file_size': '-f',
                 'write_size': '-w',
                 'n_writes': '-n',
@@ -68,33 +73,33 @@ class MultiWriters(object):
             d['pid'] = p.pid
             results.append(d)
 
-        pprint.pprint( results )
-
+        # pprint.pprint( results )
+        return results
 
 def main():
     parameters = [
-          { 'file_size': 40960,
-            'write_size': 4096,
-            'n_writes': 10,
+          { 'file_size': 256 * MB,
+            'write_size': 64 * KB,
+            'n_writes': 4 * 256 * MB / (64 * KB),
             'pattern': 'random',
             'fsync': 1,
-            'sync': 1,
-            'file_path': '/tmp/frompython',
+            'sync': 0,
+            'file_path': '/mnt/fsonloop/file01',
             'tag': 'mytag001'
           },
-          { 'file_size': 40960,
-            'write_size': 4096,
-            'n_writes': 10,
+          { 'file_size': 256 * MB,
+            'write_size': 64 * KB,
+            'n_writes': 4 * 256 * MB / (64 * KB),
             'pattern': 'random',
-            'fsync': 0,
-            'sync': 1,
-            'file_path': '/tmp/frompython',
+            'fsync': 1,
+            'sync': 0,
+            'file_path': '/mnt/fsonloop/file01',
             'tag': 'mytag002'
-           }
+          }
     ]
 
     mw = MultiWriters('./player-runtime', parameters)
-    mw.run()
+    pprint.pprint( mw.run() )
 
 
 if __name__ == '__main__':
