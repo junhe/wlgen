@@ -43,6 +43,8 @@ void print_usage(char **argv)
     printf("Usage: %s -f file_size(bytes) -w write_size(bytes) -n n_writes -p "
         "pattern(sequential|random) -y fsync(0|1) -s sync(0|1) -l file_path "
         "-t tag -m marker-file\n", argv[0]);
+    printf("Example: ./player-runtime -f 1000 -w 100 -n 10 -p random -y 1 "
+        "-s 1 -l ./here -t tag001 -m /dev/null\n");
 }
 
 void parse_args(int argc, char**argv, WorkloadConfig &wlconf)
