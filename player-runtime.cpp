@@ -173,6 +173,7 @@ int main(int argc, char **argv)
 
     append_to_marker_file(wlconf.markerfile.c_str(), wlconf.file_path.c_str());
 
+    cout <<"pid     " << getpid() << endl;
     printf("--- Performance ---\n");
     printf("duration %ld.%ld\n", result.tv_sec, result.tv_usec);
     printf("start    %ld.%ld\n", start.tv_sec, start.tv_usec);
