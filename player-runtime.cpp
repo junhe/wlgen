@@ -68,8 +68,7 @@ class WorkloadConfig {
                 n_writes_set == false ||
                 file_path_set == false ||
                 pattern_set == false ||
-                tag_set == false ||
-                markerfile_set == false) {
+                tag_set == false) {
                 return false;
             } else {
                 return true;
