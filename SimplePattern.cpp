@@ -76,5 +76,7 @@ void SimplePattern::run()
         sync();
     } 
     close(fd);
+
+    free(bug);
 }
 
