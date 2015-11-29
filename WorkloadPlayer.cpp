@@ -37,6 +37,11 @@
 #include <ctime>
 #include <locale>
 
+#include <sys/ioctl.h>
+
+#include <stdint.h>
+#include <sys/time.h>
+#include <linux/fs.h>
 
 #include "WorkloadFetcher.h"
 #include "WorkloadPlayer.h"
@@ -226,6 +231,31 @@ WorkloadPlayer::play( const WorkloadEntry &wl_entry )
             }
         }
         free(buf);
+    } else if ( wl_entry._operation == "discard" ) {
+        map<string, int>::const_iterator it;
+        it = _path2fd_dict.find( wl_entry._path );
+        if ( it == _path2fd_dict.end() ) { 
+            cerr << "File to be written is not open" << endl;
+            logwrite( wl_entry._entry_str + " File to be written is not open.");
+            exit(1);
+        }
+        assert( wl_entry._tokens.size() == 5 );
+        // Now it is safe
+        int fd = it->second; // for short
+        off_t offset;
+        size_t length;
+        istringstream( wl_entry._tokens[3] ) >> offset;
+        istringstream( wl_entry._tokens[4] ) >> length;
+
+        uint64_t range[2] = { offset, length };
+        int ret = ioctl(fd, BLKDISCARD, &range);
+        if (ret) {
+            ostringstream oss;
+            oss << "ret=" << ret << ", Failed to discard.";
+            oss << " error msg:" << strerror(errno);
+            logwrite( wl_entry._entry_str + " " + oss.str());
+            exit(1);
+        }
     } else if ( wl_entry._operation == "fsync" ) {
         //cout << "fsyncing..." << endl;
         map<string, int>::const_iterator it;
