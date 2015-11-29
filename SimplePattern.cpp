@@ -77,6 +77,6 @@ void SimplePattern::run()
     } 
     close(fd);
 
-    free(bug);
+    free(buf);
 }
 
